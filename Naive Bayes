@@ -1,0 +1,52 @@
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.metrics import confusion_matrix
+import pandas as pd
+import numpy as np
+#Read files
+train = pd.read_csv(r"C:\Users\K.sreenivasulu\Desktop\creditcard.csv")
+test = pd.read_csv(r"C:\Users\K.sreenivasulu\Desktop\creditcard.csv")
+train['source']='train'
+test['source']='test'
+data = pd.concat([train, test],ignore_index=True)
+print(train.shape, test.shape, data.shape)
+#checking missing values, data description and unique values
+print(data.apply(lambda x: sum(x.isnull())))
+print(data.describe())
+print(data.apply(lambda x: len(x.unique())))
+x=np.array(train[['Time','V1','V2','V3','V4','V5','V6','V7','V8','V9','V10','V11','V12','V13','V14','V15','V16','V17','V18','V19','V20','V21','V22','V23','V24','V25','V26','V27','V28','Amount']])
+#assigning predictor and target variables
+y=np.array(train[['Class']]).astype(int)
+print(x)
+print(y)
+model = BernoulliNB()
+# Train the model using the training sets
+model.fit(x, y.ravel())
+z=np.array(test[['Time','V1','V2','V3','V4','V5','V6','V7','V8','V9','V10','V11','V12','V13','V14','V15','V16','V17','V18','V19','V20','V21','V22','V23','V24','V25','V26','V27','V28','Amount']])
+predicted= model.predict(z)
+print("predicted")
+y_true=np.array(test[['Class']]).astype(int)
+y_pred=predicted
+cm=confusion_matrix(y_true, y_pred)
+print(confusion_matrix(y_true, y_pred))
+TP = cm[0][0]
+FP = cm[0][1]
+FN = cm[1][0]
+TN = cm[1][1]
+# Sensitivity, hit rate, recall, or true positive rate
+TPR = TP/(TP+FN)
+# Specificity or true negative rate
+TNR = TN/(TN+FP)
+# Precision or positive predictive value
+PPV = TP/(TP+FP)
+# Negative predictive value
+NPV = TN/(TN+FN)
+# Fall out or false positive rate
+FPR = FP/(FP+TN)
+# False negative rate
+FNR = FN/(TP+FN)
+# False discovery rate
+FDR = FP/(TP+FP)
+# Overall accuracy
+ACC = (TP+TN)/(TP+FP+FN+TN)
+print("Accuracy percent:")
+print(ACC*100 )
